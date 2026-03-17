@@ -8,7 +8,7 @@ import config from '../utils/config.js';
 import messages from '../utils/messages.js';
 
 // NexGit backend server URL
-const SERVER_URL = 'https://nexgit-server.railway.app';
+const SERVER_URL = 'https://nexgit-server.onrender.com';
 
 // Common git errors — offline fallback
 const KNOWN_ERRORS = {
@@ -78,22 +78,25 @@ function matchKnownError(errorText) {
 // Call backend server for AI explanation
 async function callServer(errorText, language) {
     try {
+        console.log('Calling server:', `${SERVER_URL}/explain`);
         const response = await fetch(`${SERVER_URL}/explain`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ error: errorText, language }),
-            signal: AbortSignal.timeout(10000) // 10 second timeout
+            signal: AbortSignal.timeout(60000)
         });
 
+        console.log('Response status:', response.status);
         if (!response.ok) throw new Error('Server error');
 
         const data = await response.json();
         return data;
 
     } catch (error) {
-        return null; // Fall back to offline mode
+        console.log('Server call failed:', error.message);
+        return null;
     }
-}
+  }
 
 async function explainCommand(errorText) {
     try {
