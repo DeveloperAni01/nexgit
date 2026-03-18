@@ -15,6 +15,8 @@ import historyCommand from '../src/commands/history.js';
 import diffCommand from '../src/commands/diff.js';
 import explainCommand from '../src/commands/explain.js';
 import langCommand from '../src/commands/lang.js';
+import initCommand from '../src/commands/init.js';
+import setupCommand from '../src/commands/setup.js';
 
 // ✅ Check Git installed FIRST
 const gitInstalled = await checkGitInstalled();
@@ -34,11 +36,6 @@ program
     .command('ignore')
     .description('Auto fix your .gitignore file')
     .action(ignoreCommand);
-
-program
-    .command('commit <message>')
-    .description('Smart commit with safety checks')
-    .action(commitCommand);
 
 program
     .command('push')
@@ -88,5 +85,21 @@ program
     .command('lang')
     .description('Change NexGit language')
     .action(langCommand);
+
+program
+    .command('init')
+    .description('Initialize a new Git repo with smart .gitignore')
+    .action(initCommand);
+
+program
+    .command('setup')
+    .description('Configure NexGit settings and GitHub connection')
+    .action(setupCommand);
+
+program
+    .command('commit [message]')
+    .description('Smart commit with safety checks')
+    .action(commitCommand);
+
 
 program.parse(process.argv);

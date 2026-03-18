@@ -12,8 +12,30 @@ async function statusCommand() {
         if (!repo) return;
 
         // No commits yet
+        // No commits yet — but still show untracked files
         if (!repo.hasCommits) {
-            messages.noCommits();
+            let output = '';
+            output += chalk.yellow.bold('⚠️  No commits yet!\n\n');
+
+            if (repo.untracked.length > 0) {
+                output += chalk.gray.bold('❓ Untracked files (not committed yet):\n');
+                repo.untracked.forEach(f => {
+                    output += chalk.gray(`   ? ${f}\n`);
+                });
+                output += '\n';
+            }
+
+            output += chalk.cyan('👉 Make your first commit:\n');
+            output += chalk.green('   nexgit commit "first commit"');
+
+            console.log(
+                boxen(output, {
+                    padding: 1,
+                    borderColor: 'yellow',
+                    title: '🤖 NexGit Status',
+                    titleAlignment: 'center'
+                })
+            );
             return;
         }
 

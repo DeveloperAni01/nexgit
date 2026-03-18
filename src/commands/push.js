@@ -22,36 +22,18 @@ async function pushCommand() {
             return;
         }
 
-        // Check if nothing to push
-        if (repo.ahead === 0) {
-            console.log(
-                boxen(
-                    chalk.yellow('🤔 Nothing to push bro!\n\n') +
-                    chalk.gray('Your GitHub is already up to date.\n') +
-                    chalk.gray('Make some changes and commit first!'),
-                    {
-                        padding: 1,
-                        borderColor: 'yellow',
-                        title: '🤖 NexGit Push',
-                        titleAlignment: 'center'
-                    }
-                )
-            );
-            return;
-        }
-
-        // Check uncommitted changes
+        // Check uncommitted changes FIRST
         if (repo.modified.length > 0 || repo.untracked.length > 0) {
             console.log(
                 boxen(
                     chalk.yellow('⚠️  You have uncommitted changes!\n\n') +
                     chalk.white('These will NOT be pushed:\n') +
-                    repo.modified.map(f => chalk.yellow(`   ~ ${f}`)).join('\n') +
+                    [...repo.modified, ...repo.untracked].map(f => chalk.yellow(`   ~ ${f}`)).join('\n') +
                     chalk.gray('\n\nTip: Run nexgit commit first!'),
                     {
                         padding: 1,
                         borderColor: 'yellow',
-                        title: '⚠️  Nexgit Warning',
+                        title: '⚠️  NexGit Warning',
                         titleAlignment: 'center'
                     }
                 )
@@ -66,6 +48,25 @@ async function pushCommand() {
                 messages.info('Push cancelled. Run nexgit commit first!', 'NexGit Push');
                 return;
             }
+        }
+
+        // Check if nothing to push
+        const hasNoTracking = !repo.status.tracking;
+        if (repo.ahead === 0 && !hasNoTracking) {
+            console.log(
+                boxen(
+                    chalk.yellow('🤔 Nothing to push bro!\n\n') +
+                    chalk.gray('Your GitHub is already up to date.\n') +
+                    chalk.gray('Make some changes and commit first!'),
+                    {
+                        padding: 1,
+                        borderColor: 'yellow',
+                        title: '🤖 NexGit Push',
+                        titleAlignment: 'center'
+                    }
+                )
+            );
+            return;
         }
 
         // Warn if pushing to main or master
@@ -89,7 +90,6 @@ async function pushCommand() {
                 message: `Push to "${repo.branch}" anyway?`,
                 default: true
             });
-
 
             if (!proceed) {
                 messages.info('Push cancelled.', 'NexGit Push');
@@ -124,7 +124,7 @@ async function pushCommand() {
                 {
                     padding: 1,
                     borderColor: 'green',
-                    title: '🤖 Nexgit Push',
+                    title: '🤖 NexGit Push',
                     titleAlignment: 'center'
                 }
             )
