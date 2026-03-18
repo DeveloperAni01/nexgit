@@ -23,6 +23,6 @@ console.log(chalk.white('  3. Check status    →  ') + chalk.cyan('nexgit statu
 console.log(chalk.white('  4. Smart commit    →  ') + chalk.cyan('nexgit commit'));
 console.log(chalk.white('  5. Push to GitHub  →  ') + chalk.cyan('nexgit push'));
 console.log('');
-console.log(chalk.gray('  📖 Docs: https://github.com/DeveloperAni01/nexgit'));
+console.log(chalk.gray('  📖 npm: https://www.npmjs.com/package/nexgit-cli'));
 console.log(chalk.gray('  ─────────────────────────────────────────────'));
 console.log('');

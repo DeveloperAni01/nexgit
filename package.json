@@ -5,12 +5,13 @@
   "main": "index.js",
   "bin": {
     "nexgit": "bin/nexgit.js"
-},
+  },
   "files": [
     "bin",
     "src",
     "scripts",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

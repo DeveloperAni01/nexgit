@@ -2,10 +2,10 @@
 
 > **Git for Humans — AI Powered Git Assistant**
 
-[![npm version](https://img.shields.io/npm/v/nexgit?color=cyan&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
-[![npm downloads](https://img.shields.io/npm/dm/nexgit?color=green&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
-[![license](https://img.shields.io/npm/l/nexgit?color=yellow&style=flat-square)](https://github.com/DeveloperAni01/nexgit/blob/main/LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square)](https://nodejs.org)
+[![npm version](https://img.shields.io/npm/v/nexgit-cli?color=cyan&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
+[![npm downloads](https://img.shields.io/npm/dm/nexgit-cli?color=green&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
+[![license](https://img.shields.io/npm/l/nexgit-cli?color=yellow&style=flat-square)](https://github.com/DeveloperAni01/nexgit/blob/main/LICENSE)
+[![node](https://img.shields.io/node/v/nexgit-cli?style=flat-square)](https://nodejs.org)
 
 ```
  ███╗   ██╗███████╗██╗  ██╗ ██████╗ ██╗████████╗
@@ -20,27 +20,14 @@
 
 ## 😱 The Problem
 
-Every fresher joining Wipro, TCS, Infosys, or any bootcamp struggles with Git daily:
+Git is powerful — but it's not beginner friendly.
 
-- ❌ Don't know the difference between local Git and GitHub
-- ❌ Accidentally push `node_modules`, `.env`, `bin`, `obj` files
-- ❌ Merge wrong branches — everything breaks
-- ❌ Git errors look like alien language
-- ❌ No tool explains what went wrong in plain English
+- ❌ Cryptic error messages that make no sense
+- ❌ Accidentally pushing `.env`, `node_modules`,`bin`, `obj` to GitHub
+- ❌ No warning before dangerous commands
+- ❌ Setting up a repo takes 10 manual steps
 
-**NexGit fixes ALL of that.** One tool. Zero confusion.
-
----
-
-## ✨ Features
-
-- 🤖 **AI Powered** — Explains errors, generates commit messages, writes README files
-- 🚀 **One Command Setup** — `nexgit init` creates local repo + GitHub repo + .gitignore + README automatically
-- 🛡️ **Safety First** — Warns before every dangerous action
-- 📝 **Smart Commits** — AI suggests perfect conventional commit messages
-- 🌍 **Multi Language** — English, Hinglish, Hindi support
-- 🎯 **Beginner Friendly** — No Git knowledge required
-- ⚡ **Works Everywhere** — Windows, Mac, Linux
+**NexGit fixes ALL of that. One command. Zero confusion.**
 
 ---
 
@@ -50,86 +37,81 @@ Every fresher joining Wipro, TCS, Infosys, or any bootcamp struggles with Git da
 npm install -g nexgit-cli
 ```
 
-That's it. NexGit is now available globally on your machine!
-
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. One time setup
-nexgit setup
-
-# 2. Create a new project with GitHub repo
-nexgit init
-
-# 3. Check what changed
-nexgit status
-
-# 4. Commit with AI generated message
-nexgit commit
-
-# 5. Push to GitHub
-nexgit push
+nexgit setup    # one time setup — GitHub token + language
+nexgit init     # create local + GitHub repo in one command
+nexgit status   # see what changed
+nexgit commit   # AI generated commit message
+nexgit push     # safely push to GitHub
 ```
 
 ---
 
-## 📖 All Commands
+## ✨ Features
 
-### 🔧 Setup & Init
+- 🤖 **AI Commit Messages** — Gemini AI suggests perfect conventional commit messages
+- 🚀 **One Command Init** — creates local repo + GitHub repo + `.gitignore` + `README.md` automatically
+- 🛡️ **Safety First** — warns before every dangerous action
+- 🌍 **Multi Language** — English, Hinglish, Hindi
+- 🎯 **Beginner Friendly** — plain English, no jargon
+- ⚡ **Cross Platform** — Windows, Mac, Linux
 
-| Command | Description |
+---
+
+## 📖 Commands
+
+### Setup & Init
+
+| Command | What it does |
 |---------|-------------|
 | `nexgit setup` | One time setup — language + GitHub token |
-| `nexgit init` | Create local repo + GitHub repo + .gitignore + AI README |
+| `nexgit init` | Create local + GitHub repo automatically |
 
-### 📊 Daily Workflow
+### Daily Workflow
 
-| Command | Description |
+| Command | What it does |
 |---------|-------------|
 | `nexgit status` | See git state in plain English |
-| `nexgit commit` | Smart commit with AI message suggestion |
-| `nexgit commit "message"` | Commit with your own message |
-| `nexgit push` | Safely push to GitHub with warnings |
+| `nexgit commit` | Smart commit with AI message |
+| `nexgit commit "msg"` | Commit with your own message |
+| `nexgit push` | Safely push to GitHub |
 | `nexgit pull` | Safely pull latest changes |
 
-### 🌿 Branch Management
+### Branch Management
 
-| Command | Description |
+| Command | What it does |
 |---------|-------------|
 | `nexgit branch` | List all branches |
 | `nexgit branch "name"` | Create a new branch |
 | `nexgit switch "branch"` | Switch to another branch |
 | `nexgit merge "branch"` | Safely merge with warnings |
 
-### 🛠️ Utilities
+### Utilities
 
-| Command | Description |
+| Command | What it does |
 |---------|-------------|
-| `nexgit diff` | See what changed in your files |
-| `nexgit history` | See commit history in plain English |
-| `nexgit ignore` | Auto fix your .gitignore file |
+| `nexgit diff` | See what changed in files |
+| `nexgit history` | Commit history in plain English |
+| `nexgit ignore` | Auto fix your `.gitignore` |
 | `nexgit undo` | Safely undo git actions |
 | `nexgit explain "error"` | AI explains any git error |
-| `nexgit lang` | Change language (English/Hinglish/Hindi) |
+| `nexgit lang` | Change language |
 
 ---
 
 ## 🎯 nexgit init — The Magic Command
 
-```bash
+```
 > nexgit init
 
-👋 Welcome to NexGit Init!
-
-📌 Step 1 — Project Details
-? 🤖 What is your project name? my-awesome-app
-? 🤖 Public or Private repo? 🌍 Public
-
-📌 Step 2 — Project Type
-? 📁 What type of project? 🟢 Node.js
-? 🌿 Default branch name? 🟢 main
+? Project name: my-app
+? Public or Private? Public
+? Project type? Node.js
+? Default branch? main
 
 ⚙️  Creating local Git repo...  ✅
 📄 Generating .gitignore...     ✅
@@ -137,87 +119,39 @@ nexgit push
 🌐 Creating GitHub repo...      ✅
 🔗 Connecting to GitHub...      ✅
 
-🚀 You're ready to code bro!
-🔗 GitHub: https://github.com/you/my-awesome-app
+🚀 You're ready to code!
+🔗 https://github.com/you/my-app
 ```
 
-**No GitHub website. No manual commands. Nothing.**
+No GitHub website. No manual commands. Nothing.
 
 ---
 
 ## 🤖 AI Commit Messages
 
-```bash
+```
 > nexgit commit
 
 ? How do you want to commit?
 ❯ 🤖 AI generate message (magic mode ✨)
-  ✍️  I'll type my own message
+  ✍️  I'll type my own
 
-🤖 Thinking of a commit message... ✅
+🤖 Thinking...  ✅
 
-? Pick a commit message:
-❯ ⭐ feat: add user authentication with JWT tokens
+? Pick a message:
+❯ ⭐ feat: add user authentication with JWT
      feat: implement login and signup pages
-     chore: update auth related files
-```
-
----
-
-## 🌍 Multi Language Support
-
-```bash
-> nexgit lang
-
-# English  → Professional mode
-# Hinglish → "Bhai yeh error tab aata hai jab..."
-# Hindi    → Full Hindi responses
-```
-
----
-
-## 🛡️ Safety Features
-
-NexGit warns you before EVERY dangerous action:
-
-- 🚨 Pushing `.env`, `node_modules`, `bin`, `obj` files
-- 🚨 Merging directly into `main` or `master`
-- 🚨 Force pushing or deleting branches
-- 🚨 Discarding uncommitted changes
-
----
-
-## 📦 Tech Stack
-
-| Technology | Purpose |
-|------------|---------|
-| Node.js | Core runtime |
-| Commander.js | CLI commands |
-| simple-git | Git operations |
-| Chalk + Boxen | Beautiful terminal UI |
-| Gemini AI | AI brain |
-| GitHub API | Auto repo creation |
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open issues and pull requests.
-
-```bash
-git clone https://github.com/DeveloperAni01/nexgit.git
-cd nexgit
-npm install
+     chore: update auth files
 ```
 
 ---
 
 ## 👨‍💻 Author
 
-**Anirban Mondal** — Built with 💚 for developers who are learning
+**Anirban Mondal**
 
 - GitHub: [@DeveloperAni01](https://github.com/DeveloperAni01)
-- npm: [nexgit](https://www.npmjs.com/package/nexgit)
+- npm: [nexgit-cli](https://www.npmjs.com/package/nexgit-cli)
 
 ---
 
@@ -227,7 +161,4 @@ ISC © [Anirban Mondal](https://github.com/DeveloperAni01)
 
 ---
 
-<p align="center">
-  <b>Simple • Unique • Real Problem • Real Help</b><br/>
-  <i>Built with 💚 — Git for Humans 🤖</i>
-</p>
+<p align="center"><i>Simple • Unique • Real Problem • Real Help</i></p>
