@@ -17,6 +17,7 @@ import explainCommand from '../src/commands/explain.js';
 import langCommand from '../src/commands/lang.js';
 import initCommand from '../src/commands/init.js';
 import setupCommand from '../src/commands/setup.js';
+const pkg = require('../package.json');
 
 // ✅ Check Git installed FIRST
 const gitInstalled = await checkGitInstalled();
@@ -25,7 +26,7 @@ if (!gitInstalled) process.exit(1);
 program
     .name('nexgit')
     .description('Git for Humans — AI powered Git assistant')
-    .version('1.0.0');
+    .version(pkg.version);
 
 program
     .command('status')
