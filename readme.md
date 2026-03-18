@@ -2,8 +2,8 @@
 
 > **Git for Humans — AI Powered Git Assistant**
 
-[![npm version](https://img.shields.io/npm/v/nexgit?color=cyan&style=flat-square)](https://www.npmjs.com/package/nexgit)
-[![npm downloads](https://img.shields.io/npm/dm/nexgit?color=green&style=flat-square)](https://www.npmjs.com/package/nexgit)
+[![npm version](https://img.shields.io/npm/v/nexgit?color=cyan&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
+[![npm downloads](https://img.shields.io/npm/dm/nexgit?color=green&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
 [![license](https://img.shields.io/npm/l/nexgit?color=yellow&style=flat-square)](https://github.com/DeveloperAni01/nexgit/blob/main/LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square)](https://nodejs.org)
 
@@ -47,7 +47,7 @@ Every fresher joining Wipro, TCS, Infosys, or any bootcamp struggles with Git da
 ## 📦 Installation
 
 ```bash
-npm install -g nexgit
+npm install -g nexgit-cli
 ```
 
 That's it. NexGit is now available globally on your machine!

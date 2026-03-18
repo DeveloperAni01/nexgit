@@ -1,11 +1,11 @@
 {
-  "name": "nexgit",
+  "name": "nexgit-cli",
   "version": "1.0.0",
   "description": "Next-gen Git assistant for humans — AI powered",
   "main": "index.js",
   "bin": {
-    "nexgit": "./bin/nexgit.js"
-  },
+    "nexgit": "bin/nexgit.js"
+},
   "files": [
     "bin",
     "src",
