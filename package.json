@@ -6,6 +6,12 @@
   "bin": {
     "nexgit": "./bin/nexgit.js"
   },
+  "files": [
+    "bin",
+    "src",
+    "scripts",
+    "README.md"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "node scripts/postinstall.js"
@@ -16,6 +22,8 @@
     "ai",
     "developer-tools",
     "beginner",
+    "fresher",
+    "github",
     "nexgit"
   ],
   "author": "Anirban Mondal",
