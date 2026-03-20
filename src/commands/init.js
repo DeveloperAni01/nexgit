@@ -7,30 +7,18 @@ import boxen from 'boxen';
 import { select, input, confirm } from '@inquirer/prompts';
 import config from '../utils/config.js';
 import messages from '../utils/messages.js';
-import gitUtils from '../utils/git.js';
+import detectProjectType from '../utils/detector.js';
 import simpleGit from 'simple-git';
 
-// .gitignore templates
-const gitignoreTemplates = {
-    nodejs: [
-        'node_modules/', 'dist/', '.env', '.env.*',
-        '*.log', 'npm-debug.log*', '.DS_Store', 'Thumbs.db', '*.pem', '*.key',
-    ],
-    react: [
-        'node_modules/', 'dist/', 'build/', '.env', '.env.*',
-        '*.log', 'npm-debug.log*', '.DS_Store', 'Thumbs.db', '*.pem', '*.key',
-    ],
-    dotnet: [
-        'bin/', 'obj/', '*.user', '*.suo', '.vs/',
-        'packages/', '*.log', '.env', '.env.*', '.DS_Store', 'Thumbs.db',
-    ],
-    python: [
-        '__pycache__/', '*.py[cod]', '.env', '.env.*',
-        'venv/', '.venv/', '*.log', '.DS_Store', 'Thumbs.db', '*.pem', '*.key',
-    ],
-    other: [
-        '.env', '.env.*', '*.log', '.DS_Store', 'Thumbs.db', '*.pem', '*.key',
-    ],
+const SERVER_URL = 'https://nexgit-server.onrender.com';
+
+// Fallback patterns if server fails
+const fallbackPatterns = {
+    nodejs: ['node_modules/', 'dist/', '.env', '.env.*', '*.log', '.DS_Store', 'Thumbs.db'],
+    react: ['node_modules/', 'dist/', 'build/', '.env', '.env.*', '*.log', '.DS_Store'],
+    dotnet: ['bin/', 'obj/', '*.user', '.vs/', '.env', '*.log', '.DS_Store'],
+    python: ['__pycache__/', 'venv/', '.venv/', '.env', '.env.*', '*.log', '.DS_Store'],
+    other: ['.env', '.env.*', '*.log', '.DS_Store', 'Thumbs.db', '*.pem', '*.key'],
 };
 
 async function initCommand() {
@@ -51,31 +39,188 @@ async function initCommand() {
             )
         );
 
-        // Check if already inside a git repo
+        // ─── CHECK IF ALREADY A GIT REPO ──────────────────────────
         try {
             const existingGit = simpleGit(cwd);
             const isRepo = await existingGit.checkIsRepo();
+
             if (isRepo) {
+                const remotes = await existingGit.getRemotes(true);
+                const hasRemote = remotes.length > 0;
+
+                // Already connected — nothing to do
+                if (hasRemote) {
+                    console.log(
+                        boxen(
+                            chalk.yellow.bold('⚠️  Already a connected Git repo!\n\n') +
+                            chalk.white('This folder already has a GitHub remote:\n') +
+                            chalk.cyan(`   ${remotes[0].refs.fetch}\n\n`) +
+                            chalk.gray('Run nexgit status to see current state.'),
+                            {
+                                padding: 1,
+                                borderColor: 'yellow',
+                                title: '🤖 NexGit Init',
+                                titleAlignment: 'center',
+                            }
+                        )
+                    );
+                    return;
+                }
+
+                // Local repo but no remote — give options
                 console.log(
                     boxen(
-                        chalk.yellow.bold('⚠️  Already inside a Git repo!\n\n') +
-                        chalk.white('This folder is already tracked by Git.\n') +
-                        chalk.gray('Navigate to a fresh empty folder and run nexgit init again!\n\n') +
-                        chalk.cyan('Tip: cd Desktop && mkdir my-project && cd my-project'),
+                        chalk.cyan.bold('📁 Local Git repo detected!\n\n') +
+                        chalk.white('This folder already has a local Git repo\n') +
+                        chalk.gray("but it's not connected to GitHub yet."),
                         {
                             padding: 1,
-                            borderColor: 'yellow',
+                            borderColor: 'cyan',
                             title: '🤖 NexGit Init',
                             titleAlignment: 'center',
                         }
                     )
                 );
-                return;
+
+                const action = await select({
+                    message: '🤖 What do you want to do?',
+                    choices: [
+                        { name: '🆕 Create new GitHub repo and connect', value: 'create' },
+                        { name: '🔗 Connect to existing GitHub repo', value: 'connect' },
+                        { name: '❌ Cancel', value: 'cancel' },
+                    ]
+                });
+
+                if (action === 'cancel') {
+                    console.log(chalk.yellow('\n⏩ Cancelled. Run nexgit init anytime!\n'));
+                    return;
+                }
+
+                if (action === 'connect') {
+                    const repoUrl = await input({
+                        message: '🔗 Paste your GitHub repo URL:',
+                        validate: (value) => {
+                            if (!value || value.trim().length === 0) return 'URL cannot be empty!';
+                            if (!value.includes('github.com')) return 'Please enter a valid GitHub URL!';
+                            return true;
+                        }
+                    });
+
+                    process.stdout.write(chalk.white('🔗 Connecting to GitHub...  '));
+                    await existingGit.addRemote('origin', repoUrl.trim());
+                    console.log(chalk.green('✅'));
+
+                    console.log(
+                        boxen(
+                            chalk.green.bold('🚀 Connected successfully!\n\n') +
+                            chalk.cyan(`🔗 GitHub : ${repoUrl.trim()}\n\n`) +
+                            chalk.yellow.bold('👣 Next Steps:\n') +
+                            chalk.white('  1. Check status   → ') + chalk.green('nexgit status\n') +
+                            chalk.white('  2. Commit work    → ') + chalk.green('nexgit commit\n') +
+                            chalk.white('  3. Push to GitHub → ') + chalk.green('nexgit push\n'),
+                            {
+                                padding: 1,
+                                borderColor: 'green',
+                                title: '🎉 Connected!',
+                                titleAlignment: 'center',
+                            }
+                        )
+                    );
+                    return;
+                }
+
+                if (action === 'create') {
+                    const token = config.get('githubToken');
+                    if (!token) {
+                        console.log(
+                            boxen(
+                                chalk.yellow.bold('⚠️  GitHub token not found!\n\n') +
+                                chalk.white('Run this first → ') + chalk.cyan('nexgit setup\n') +
+                                chalk.gray('It only takes 1 minute. Do it once, use forever!'),
+                                {
+                                    padding: 1,
+                                    borderColor: 'yellow',
+                                    title: '🤖 NexGit Init',
+                                    titleAlignment: 'center',
+                                }
+                            )
+                        );
+                        return;
+                    }
+
+                    const projectName = await input({
+                        message: '🤖 What is your project name?',
+                        validate: (value) => {
+                            if (!value || value.trim().length === 0) return 'Project name cannot be empty!';
+                            if (/\s/.test(value)) return 'No spaces allowed! Use hyphens (my-project)';
+                            return true;
+                        }
+                    });
+
+                    const visibility = await select({
+                        message: '🤖 Public or Private repo?',
+                        choices: [
+                            { name: '🌍 Public  (Anyone can see)', value: 'public' },
+                            { name: '🔒 Private (Only you)', value: 'private' },
+                        ]
+                    });
+
+                    process.stdout.write(chalk.white('🌐 Creating GitHub repo...  '));
+                    const res = await fetch('https://api.github.com/user/repos', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json',
+                            'User-Agent': 'nexgit-cli'
+                        },
+                        body: JSON.stringify({
+                            name: projectName,
+                            private: visibility === 'private',
+                            auto_init: false,
+                        })
+                    });
+
+                    const resData = await res.json();
+
+                    if (!res.ok) {
+                        console.log(chalk.red('❌'));
+                        console.log(chalk.red(`\n❌ GitHub Error: ${resData.message}`));
+                        console.log(chalk.gray('Tip: Repo with this name might already exist on GitHub!'));
+                        return;
+                    }
+
+                    console.log(chalk.green('✅'));
+
+                    process.stdout.write(chalk.white('🔗 Connecting to GitHub...  '));
+                    await existingGit.addRemote('origin', resData.clone_url);
+                    console.log(chalk.green('✅'));
+
+                    console.log(
+                        boxen(
+                            chalk.green.bold("🚀 You're ready to code bro!\n\n") +
+                            chalk.cyan(`📁 Project   : ${projectName}\n`) +
+                            chalk.cyan(`🔒 Visibility: ${visibility}\n`) +
+                            chalk.cyan(`🔗 GitHub    : ${resData.html_url}\n\n`) +
+                            chalk.yellow.bold('👣 Next Steps:\n') +
+                            chalk.white('  1. Check status   → ') + chalk.green('nexgit status\n') +
+                            chalk.white('  2. Commit work    → ') + chalk.green('nexgit commit\n') +
+                            chalk.white('  3. Push to GitHub → ') + chalk.green('nexgit push\n'),
+                            {
+                                padding: 1,
+                                borderColor: 'green',
+                                title: '🎉 Repo Created!',
+                                titleAlignment: 'center',
+                            }
+                        )
+                    );
+                    return;
+                }
             }
         } catch (e) {
             // not a repo — good, continue
         }
 
+        // ─── FRESH FOLDER FLOW ─────────────────────────────────────
 
         // Check GitHub token
         const token = config.get('githubToken');
@@ -117,8 +262,7 @@ async function initCommand() {
             ]
         });
 
-        // Step 3 — Project type for .gitignore
-        // Step 3 — Project type for .gitignore
+        // Step 3 — Project type
         console.log(chalk.cyan('\n📌 Step 2 — Project Type\n'));
 
         const projectType = await select({
@@ -139,7 +283,7 @@ async function initCommand() {
                 { name: '🟢 main   (recommended)', value: 'main' },
                 { name: '📦 master (classic)', value: 'master' },
                 { name: '🔧 dev    (development)', value: 'dev' },
-                { name: '✍️  custom (I\'ll type my own)', value: 'custom' },
+                { name: "✍️  custom (I'll type my own)", value: 'custom' },
             ],
         });
 
@@ -155,7 +299,7 @@ async function initCommand() {
             });
         }
 
-        // Confirm before doing anything
+        // Confirm
         console.log('');
         const confirmed = await confirm({
             message: `Ready to create "${projectName}" as a ${visibility} repo?`,
@@ -169,40 +313,61 @@ async function initCommand() {
 
         console.log('');
 
-        // Step 4 — git init locally
+        // Step 4 — git init
         process.stdout.write(chalk.white('⚙️  Creating local Git repo...  '));
         const git = simpleGit(cwd);
         await git.init();
         await git.raw(['branch', '-M', defaultBranch]);
         console.log(chalk.green('✅'));
 
-        // Step 5 — Generate .gitignore
+        // Step 5 — AI .gitignore
         process.stdout.write(chalk.white('📄 Generating .gitignore...     '));
         const gitignorePath = path.join(cwd, '.gitignore');
-        const patterns = gitignoreTemplates[projectType];
-        let existing = '';
-        if (fs.existsSync(gitignorePath)) {
-            existing = fs.readFileSync(gitignorePath, 'utf8');
+        let patterns = [];
+
+        try {
+            let stacksToSend = [];
+            if (projectType === 'other') {
+                const detected = detectProjectType(cwd);
+                stacksToSend = detected.detectedStacks;
+            }
+
+            const response = await fetch(`${SERVER_URL}/gitignore`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    projectType,
+                    detectedStacks: stacksToSend,
+                    language: config.getLanguage(),
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                patterns = data.patterns || [];
+            } else {
+                patterns = fallbackPatterns[projectType] || fallbackPatterns.other;
+            }
+        } catch (e) {
+            patterns = fallbackPatterns[projectType] || fallbackPatterns.other;
         }
-        const toAdd = patterns.filter(p => !existing.includes(p));
-        const content = existing
-            ? existing + '\n# Generated by NexGit 🤖\n' + toAdd.join('\n') + '\n'
-            : '# Generated by NexGit 🤖\n' + toAdd.join('\n') + '\n';
+
+        const content = '# Generated by NexGit 🤖\n' + patterns.join('\n') + '\n';
         fs.writeFileSync(gitignorePath, content);
         console.log(chalk.green('✅'));
 
-        // Step 5.5 — Generate AI README
+        // Step 5.5 — AI README
         process.stdout.write(chalk.white('📝 Generating README.md...      '));
         try {
-            const readmeResponse = await fetch('https://nexgit-server.onrender.com/readme', {
+            const readmeResponse = await fetch(`${SERVER_URL}/readme`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     projectName,
                     projectType,
                     visibility,
-                    language: config.getLanguage()
-                })
+                    language: config.getLanguage(),
+                }),
             });
 
             if (readmeResponse.ok) {
@@ -217,20 +382,20 @@ async function initCommand() {
             console.log(chalk.yellow('⚠️  (skipped)'));
         }
 
-        // Step 6 — Create GitHub repo via API
+        // Step 6 — Create GitHub repo
         process.stdout.write(chalk.white('🌐 Creating GitHub repo...      '));
         const response = await fetch('https://api.github.com/user/repos', {
             method: 'POST',
             headers: {
                 'Authorization': `token ${token}`,
                 'Content-Type': 'application/json',
-                'User-Agent': 'nexgit-cli'
+                'User-Agent': 'nexgit-cli',
             },
             body: JSON.stringify({
                 name: projectName,
                 private: visibility === 'private',
                 auto_init: false,
-            })
+            }),
         });
 
         const responseData = await response.json();
@@ -245,7 +410,7 @@ async function initCommand() {
         const repoData = responseData;
         console.log(chalk.green('✅'));
 
-        // Step 7 — Connect local to GitHub
+        // Step 7 — Connect
         process.stdout.write(chalk.white('🔗 Connecting to GitHub...      '));
         await git.addRemote('origin', repoData.clone_url);
         console.log(chalk.green('✅'));
@@ -253,14 +418,14 @@ async function initCommand() {
         // Success!
         console.log(
             boxen(
-                chalk.green.bold('🚀 You\'re ready to code bro!\n\n') +
+                chalk.green.bold("🚀 You're ready to code bro!\n\n") +
                 chalk.cyan(`📁 Project    : ${projectName}\n`) +
                 chalk.cyan(`🔒 Visibility : ${visibility}\n`) +
                 chalk.cyan(`🌿 Branch     : ${defaultBranch}\n`) +
                 chalk.cyan(`🔗 GitHub     : ${repoData.html_url}\n\n`) +
                 chalk.yellow.bold('👣 Next Steps:\n') +
                 chalk.white('  1. Add your files   → ') + chalk.green('nexgit status\n') +
-                chalk.white('  2. Commit your work → ') + chalk.green('nexgit commit "first commit"\n') +
+                chalk.white('  2. Commit your work → ') + chalk.green('nexgit commit\n') +
                 chalk.white('  3. Push to GitHub   → ') + chalk.green('nexgit push\n'),
                 {
                     padding: 1,

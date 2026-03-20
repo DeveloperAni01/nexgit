@@ -18,7 +18,7 @@
 
 ---
 
-## 😱 The Problem
+## The Problem
 
 Git is powerful — but it's not beginner friendly.
 
@@ -31,7 +31,7 @@ Git is powerful — but it's not beginner friendly.
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install -g nexgit-cli
@@ -39,7 +39,17 @@ npm install -g nexgit-cli
 
 ---
 
-## 🚀 Quick Start
+##  Updating
+
+**To Update the Latest Version:**
+
+```bash
+npm install -g nexgit-cli@latest
+```
+
+---
+
+## Quick Start
 
 ```bash
 nexgit setup    # one time setup — GitHub token + language
@@ -50,26 +60,38 @@ nexgit push     # safely push to GitHub
 ```
 
 ---
+## Smart .gitignore
 
-## ✨ Features
+NexGit scans your project before every push and warns you if `.gitignore` is outdated:
+```
+.gitignore is outdated!
+.NET not covered
+Python not covered
 
-- 🤖 **AI Commit Messages** — Gemini AI suggests perfect conventional commit messages
-- 🚀 **One Command Init** — creates local repo + GitHub repo + `.gitignore` + `README.md` automatically
-- 🛡️ **Safety First** — warns before every dangerous action
-- 🌍 **Multi Language** — English, Hinglish, Hindi
-- 🎯 **Beginner Friendly** — plain English, no jargon
-- ⚡ **Cross Platform** — Windows, Mac, Linux
+Fix it: nexgit ignore
+```
+
+Never accidentally push `node_modules`, `bin`, `__pycache__` again!
+
+## Features
+
+- **AI Powered** — Anthropic Claude + Gemini AI for commit messages, README generation and .gitignore
+- **One Command Init** — creates local repo + GitHub repo + `.gitignore` + `README.md` automatically
+- **Safety First** — warns before every dangerous action
+- **Multi Language** — English, Hinglish, Hindi
+- **Beginner Friendly** — plain English, no jargon
+- **Cross Platform** — Windows, Mac, Linux
 
 ---
 
-## 📖 Commands
+## Commands
 
 ### Setup & Init
 
 | Command | What it does |
 |---------|-------------|
 | `nexgit setup` | One time setup — language + GitHub token |
-| `nexgit init` | Create local + GitHub repo automatically |
+| `nexgit init`  | Create local + GitHub repo — smart detection if repo already exists |
 
 ### Daily Workflow
 
@@ -96,14 +118,14 @@ nexgit push     # safely push to GitHub
 |---------|-------------|
 | `nexgit diff` | See what changed in files |
 | `nexgit history` | Commit history in plain English |
-| `nexgit ignore` | Auto fix your `.gitignore` |
+| `nexgit ignore` | AI powered — detects your stack and fixes `.gitignore` automatically |
 | `nexgit undo` | Safely undo git actions |
 | `nexgit explain "error"` | AI explains any git error |
 | `nexgit lang` | Change language |
 
 ---
 
-## 🎯 nexgit init — The Magic Command
+## nexgit init — The Magic Command
 
 ```
 > nexgit init
@@ -113,7 +135,7 @@ nexgit push     # safely push to GitHub
 ? Project type? Node.js
 ? Default branch? main
 
-⚙️  Creating local Git repo...  ✅
+⚙️ Creating local Git repo...   ✅
 📄 Generating .gitignore...     ✅
 📝 Generating README.md...      ✅
 🌐 Creating GitHub repo...      ✅
@@ -127,7 +149,7 @@ No GitHub website. No manual commands. Nothing.
 
 ---
 
-## 🤖 AI Commit Messages
+## AI Commit Messages
 
 ```
 > nexgit commit
@@ -161,4 +183,4 @@ ISC © [Anirban Mondal](https://github.com/DeveloperAni01)
 
 ---
 
-<p align="center"><i>Simple • Unique • Real Problem • Real Help</i></p>
+<p align="center"><i>❤️ From Anirban Mondal</i></p>

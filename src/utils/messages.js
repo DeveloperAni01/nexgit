@@ -47,10 +47,9 @@ function notARepo() {
 function noRemote() {
     error(
         '❌ No remote found!\n\n' +
-        chalk.yellow('Connect your GitHub repo first:\n\n') +
-        chalk.cyan('  git remote add origin <your-github-url>\n\n') +
-        chalk.gray('Example:\n') +
-        chalk.cyan('  git remote add origin https://github.com/username/repo.git'),
+        chalk.yellow('This repo is not connected to GitHub yet!\n\n') +
+        chalk.white('Fix it in one command:\n') +
+        chalk.cyan('  nexgit init\n'),
         'NexGit Error'
     );
 }

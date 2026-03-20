@@ -5,6 +5,9 @@ import boxen from 'boxen';
 import gitUtils from '../utils/git.js';
 import messages from '../utils/messages.js';
 import { confirm } from '@inquirer/prompts';
+import fs from 'fs';
+import path from 'path';
+import detectProjectType from '../utils/detector.js';
 
 async function pushCommand() {
     try {
@@ -20,6 +23,65 @@ async function pushCommand() {
         if (!repo.hasCommits) {
             messages.noCommits();
             return;
+        }
+
+        // Pre-push scan — check if .gitignore covers all detected stacks
+        const cwd = process.cwd();
+        const gitignorePath = path.join(cwd, '.gitignore');
+        const project = detectProjectType(cwd);
+
+        if (project.detectedStacks.length > 0) {
+            const existingGitignore = fs.existsSync(gitignorePath)
+                ? fs.readFileSync(gitignorePath, 'utf8')
+                : '';
+
+            const stackPatterns = {
+                'Node.js': 'node_modules',
+                '.NET': 'bin/',
+                'Angular': '.angular',
+                'Python': '__pycache__',
+                'Java': 'target/',
+                'Flutter': '.dart_tool',
+                'Ruby': 'vendor/bundle',
+                'PHP': 'vendor/',
+                'Rust': 'target/',
+                'Go': 'go.mod',
+            };
+
+            const uncoveredStacks = project.detectedStacks.filter(stack => {
+                const checkPattern = stackPatterns[stack];
+                return checkPattern && !existingGitignore.includes(checkPattern);
+            });
+
+            if (uncoveredStacks.length > 0) {
+                console.log(
+                    boxen(
+                        chalk.red.bold('🚨 .gitignore is outdated!\n\n') +
+                        chalk.white('These stacks are NOT covered:\n') +
+                        uncoveredStacks.map(s => chalk.red(`   ❌ ${s}`)).join('\n') +
+                        chalk.yellow('\n\nYour files might accidentally get pushed!\n\n') +
+                        chalk.white('Fix it:\n') +
+                        chalk.cyan('   nexgit ignore\n') +
+                        chalk.gray('Then run nexgit push again!'),
+                        {
+                            padding: 1,
+                            borderColor: 'red',
+                            title: '⚠️  NexGit Warning',
+                            titleAlignment: 'center'
+                        }
+                    )
+                );
+
+                const proceed = await confirm({
+                    message: 'Push anyway with outdated .gitignore?',
+                    default: false
+                });
+
+                if (!proceed) {
+                    messages.info('Push cancelled. Run nexgit ignore first!', 'NexGit Push');
+                    return;
+                }
+            }
         }
 
         // Check uncommitted changes FIRST
