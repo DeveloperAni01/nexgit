@@ -3,7 +3,7 @@
 > **Git for Humans — AI Powered Git Assistant**
 
 [![npm version](https://img.shields.io/npm/v/nexgit-cli?color=cyan&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
-[![npm downloads](https://img.shields.io/npm/dm/nexgit-cli?color=green&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
+[![npm downloads](https://img.shields.io/npm/dw/nexgit-cli?color=green&style=flat-square)](https://www.npmjs.com/package/nexgit-cli)
 [![license](https://img.shields.io/npm/l/nexgit-cli?color=yellow&style=flat-square)](https://github.com/DeveloperAni01/nexgit/blob/main/LICENSE)
 [![node](https://img.shields.io/node/v/nexgit-cli?style=flat-square)](https://nodejs.org)
 
